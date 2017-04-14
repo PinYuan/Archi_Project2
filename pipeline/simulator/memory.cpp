@@ -101,7 +101,7 @@ DataMemory::DataMemory(){
 unsigned int DataMemory::readWriteMemory(unsigned int address, unsigned int writeData, bool memRead, bool memWrite, Type type){
     if(memRead == true){
         if(type == WORD){
-            return (unsigned int)((dataMemory[address] << 24) | (dataMemory[address+1] << 16) | (dataMemory[address] << 8)
+            return (unsigned int)((dataMemory[address] << 24) | (dataMemory[address+1] << 16) | (dataMemory[address+2] << 8)
                                   | dataMemory[address+3]);
         }
         else if(type == HALF){
