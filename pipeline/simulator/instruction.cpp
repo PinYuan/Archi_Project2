@@ -2,6 +2,9 @@
 #include "instruction.h"
 using namespace std;
 
+extern unsigned int pc;
+extern unsigned int halt;
+
 map<int, string> instFunc{
     {0x20, "ADD"}, {0x21, "ADDU"}, {0x22 ,"SUB"}, {0x24, "AND"}, {0x25, "OR"}, {0x26, "XOR"},
     {0x27, "NOR"}, {0x28, "NAND"}, {0x2A, "SLT"}, {0x00, "SLL"}, {0x02, "SRL"}, {0x03, "SRA"},
@@ -41,24 +44,25 @@ Instruction::Instruction(unsigned int instruction){
     }
     else if(opCode == 2 || opCode == 3){
         type = 'J';
-        if(instOpcode.find(opCode) != instOpcode.end())
-            name = instOpcode[opCode];
-        else
-            cout << "illegal inst!" << endl;
+        name = instOpcode[opCode];
     }
     else if(opCode == 0){
         type = 'R';
         if(instFunc.find(func) != instFunc.end())
             name = instFunc[func];
-        else
-            cout << "illegal inst!" << endl;
-    }
+        else{
+            printf("illegal instruction found at 0x%X\n", pc);
+            halt = 0;
+        }
+	}
     else{
         type = 'I';
         if(instOpcode.find(opCode) != instOpcode.end())
             name = instOpcode[opCode];
-        else
-            cout << "illegal inst!" << endl;
+        else{
+            printf("illegal instruction found at 0x%X\n", pc);
+            halt = 0;
+        }
     }
 }
 
