@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "ErrorDetect.h"
+#include "errorDetect.h"
 #define MULT 0x18
 #define MULTU 0x19
 #define MFHI 0x10
