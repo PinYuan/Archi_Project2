@@ -88,8 +88,8 @@ void Simulator::instructionDecode(){
 
     if(inst.type == 'J'){
         if(inst.opCode == JAL){
-            RF.readWrite(0, 0, 31, pc+4, true);
-        }
+        	pipelineID_EXIn.rsData = pc;
+		}
         branchJrpc = ((pc & 0xf0000000) | (inst.targetAddr << 2));
         branchJr = true;
         flush = true;
@@ -102,16 +102,15 @@ void Simulator::instructionDecode(){
         if(inst.func == JR){
             if(!hazard.isStallForR()){
                 RF.readWrite(inst.regRs, inst.regRt, 0, 0, false);
-                unsigned int data1, data2;
+                unsigned int data1;
 
                 if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_ID = true;
                 else data1 = RF.readData1;
-                if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_ID = true;
-                else data2 = RF.readData2;
 
-                pipelineID_EXIn.rsData = data1;
-                pipelineID_EXIn.rtData = data2;
-            }
+           		branchJrpc = data1;
+                branchJr = true;
+                flush = true;	
+			 }
             else stall = true;
         }
         else{
@@ -134,10 +133,8 @@ void Simulator::instructionDecode(){
                 unsigned int data1, data2;
 
                 if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_ID = true;
-                else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_ID = true;
                 else data1 = RF.readData1;
                 if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_ID = true;
-                else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_ID = true;
                 else data2 = RF.readData2;
                 /*judge*/
                 if(inst.opCode == BEQ){
@@ -177,8 +174,6 @@ void Simulator::instructionDecode(){
 void Simulator::executeOp(){
     Instruction inst = pipelineID_EXOut.inst;
     pipelineEX_MEMIn.inst = pipelineID_EXOut.inst;
-    pipelineEX_MEMIn.rsData = pipelineID_EXOut.rsData;
-    pipelineEX_MEMIn.rtData = pipelineID_EXOut.rtData;
     pipelineEX_MEMIn.signExtendImme = pipelineID_EXOut.signExtendImme;
     pipelineEX_MEMIn.unsignExtendImme = pipelineID_EXOut.unsignExtendImme;
 
@@ -186,10 +181,11 @@ void Simulator::executeOp(){
     forward_EX_MEM_rt_EX = false;
     forward_MEM_WB_rs_EX = false;
     forward_MEM_WB_rt_EX = false;
-    ///insert error detect : number overflow
     unsigned int data1, data2;
-
-    if(inst.type == 'R' && inst.func != JR){
+	if(inst.type == 'J' && inst.opCode == JAL){
+        pipelineEX_MEMIn.rsData = pipelineID_EXOut.rsData;
+    }
+    else if(inst.type == 'R' && inst.func != JR){
         //if forward
         if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
@@ -197,6 +193,9 @@ void Simulator::executeOp(){
         if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
         else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
         else data2 = pipelineEX_MEMIn.rtData;
+
+		pipelineEX_MEMIn.rsData = data1;
+        pipelineEX_MEMIn.rtData = data2;	
 
         if(inst.func == ADD || inst.func == ADDU){
             ALU1.ALUoperater(data1, data2, 0);
@@ -262,6 +261,16 @@ void Simulator::executeOp(){
         if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
         else data1 = pipelineEX_MEMIn.rsData;
+		//for store
+		if(inst.opCode == SW || inst.opCode == SH || inst.opCode == SB){
+            if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
+            else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
+            else data2 = pipelineID_EXOut.rtData;
+        }
+		
+		pipelineEX_MEMIn.rsData = data1;
+        pipelineEX_MEMIn.rtData = data2;
+
         if(inst.opCode == ADDI || inst.opCode == ADDIU ||
             inst.opCode == LW || inst.opCode == LH || inst.opCode == LHU || inst.opCode == LB ||
             inst.opCode == LBU ||
@@ -299,7 +308,10 @@ void Simulator::memoryAccess(){
     pipelineMEM_WBIn.HI = pipelineEX_MEMOut.HI;
     pipelineMEM_WBIn.LO = pipelineEX_MEMOut.LO;
 
-    if(inst.type == 'R'){
+	if(inst.type == 'J' && inst.opCode == JAL){
+        pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.rsData;
+    }
+    else if(inst.type == 'R'){
         pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.ALUOut;
     }
     else if(inst.type == 'I'){
@@ -312,15 +324,25 @@ void Simulator::memoryAccess(){
             if(inst.opCode == LW)
                 pipelineMEM_WBIn.writeBackData = DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, WORD);
             else if(inst.opCode == LH || inst.opCode == LHU){
-                if(inst.opCode == LH)
-                    pipelineMEM_WBIn.writeBackData = 0xffff0000 | DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, HALF);
-                else
+               	if(inst.opCode == LH){
+                    unsigned int data = DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, HALF);
+                    if((data>>15) == 1)
+                        pipelineMEM_WBIn.writeBackData = 0xffff0000 | data;
+                    else
+                        pipelineMEM_WBIn.writeBackData = data;
+                } 
+				else
                     pipelineMEM_WBIn.writeBackData = DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, HALF);
             }
             else if(inst.opCode == LB || inst.opCode == LBU){
-                if(inst.opCode == LB)
-                    pipelineMEM_WBIn.writeBackData = 0xffffff00 | DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, BYTE);
-                else
+                if(inst.opCode == LB){
+                    unsigned int data = DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, BYTE);
+                    if((data>>7) == 1)
+                        pipelineMEM_WBIn.writeBackData = 0xffffff00 | data;
+                    else
+                        pipelineMEM_WBIn.writeBackData = data;
+                }
+				else
                     pipelineMEM_WBIn.writeBackData = DM.readWriteMemory(pipelineMEM_WBIn.ALUOut, 0, true, false, BYTE);
             }
         }
@@ -347,7 +369,12 @@ void Simulator::writeBack(){
     pipelineWB.LO = pipelineMEM_WBOut.LO;
     pipelineWB.writeBackData = pipelineMEM_WBOut.writeBackData;
 
-    if(inst.type == 'R'){
+	if(inst.type == 'J'){
+        if(inst.opCode == JAL){
+            RF.readWrite(0, 0, 31, pipelineWB.writeBackData, true);
+        }
+    }
+    else if(inst.type == 'R'){
         if(inst.func == ADD || inst.func == ADDU || inst.func == SUB || inst.func == AND ||
            inst.func == OR || inst.func == XOR || inst.func == NOR || inst.func == NAND ||
            inst.func == SLT || inst.func == SLL || inst.func == SRL || inst.func == SRA){
@@ -369,7 +396,7 @@ void Simulator::writeBack(){
             RF.readWrite(0, 0, inst.regRt, pipelineWB.writeBackData, true);
             ED.writeToRegister0(inst.regRt);
         }
-        else if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == ANDI || inst.opCode == ORI ||
+        else if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == LUI ||  inst.opCode == ANDI || inst.opCode == ORI ||
                 inst.opCode == NORI || inst.opCode == SLTI){
             RF.readWrite(0, 0, inst.regRt, pipelineWB.writeBackData, true);
             ED.writeToRegister0(inst.regRt);
