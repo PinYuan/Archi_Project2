@@ -5,17 +5,20 @@
 #include "pipelineReg.h"
 #include "simulate.h"
 #include "instruction.h"
+#include "errorDetect.h"
 
 using namespace std;
 unsigned int pc, branchJrpc;
 unsigned int initialSp;
 unsigned int HI;
 unsigned int LO;
+unsigned int halt;
 
 InstructionMemory IM;
 DataMemory DM;
 RegisterFile RF;
 ALU ALU1;
+ErrorDetect ED;
 
 PipelineIF_ID pipelineIF_IDIn, pipelineIF_IDOut;
 PipelineID_EX pipelineID_EXIn, pipelineID_EXOut;
@@ -27,10 +30,10 @@ int main()
 {
     Simulator simulator;
     int cycle = 0;
-    int halt = 0;
+    halt = 0;
     while(1){
-        printf("cycle : %d\n", cycle);
         RF.outputRegister(cycle);
+		ED.setCycle(cycle);
 
         simulator.writeBack();
         simulator.memoryAccess();
