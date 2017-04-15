@@ -26,9 +26,7 @@ void hazardReport(bool flush, bool stall, bool forward_EX_MEM_rs_ID ,bool forwar
     if(stall) fprintf(fptr, " to_be_stalled");
     else{
         if(forward_EX_MEM_rs_ID) fprintf(fptr, " fwd_EX-DM_rs_$%d", pipelineID_EXIn.inst.regRs);
-        if(forward_MEM_WB_rs_ID) fprintf(fptr, " fwd_DM-WB_rs_$%d", pipelineID_EXIn.inst.regRs);
         if(forward_EX_MEM_rt_ID) fprintf(fptr, " fwd_EX-DM_rt_$%d", pipelineID_EXIn.inst.regRt);
-        if(forward_MEM_WB_rt_ID) fprintf(fptr, " fwd_DM-WB_rt_$%d", pipelineID_EXIn.inst.regRt);
     }
     //branch forward
     fprintf(fptr, "\n");

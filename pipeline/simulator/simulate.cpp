@@ -105,10 +105,8 @@ void Simulator::instructionDecode(){
                 unsigned int data1, data2;
 
                 if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_ID = true;
-                else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_ID = true;
                 else data1 = RF.readData1;
                 if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_ID = true;
-                else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_ID = true;
                 else data2 = RF.readData2;
 
                 pipelineID_EXIn.rsData = data1;
@@ -175,8 +173,6 @@ void Simulator::instructionDecode(){
             else stall = true;
         }
     }
-    printf("ID : instruction: 0x%08x ", inst.completeInst);
-    printf("type: %c , name = %s, rd = %d, rt = %d, rs = %d\n\n", inst.type, inst.name.c_str(), inst.regRd, inst.regRt, inst.regRs);
 }
 void Simulator::executeOp(){
     Instruction inst = pipelineID_EXOut.inst;
@@ -294,10 +290,6 @@ void Simulator::executeOp(){
     }
     pipelineEX_MEMIn.ALUOut = ALU1.ALUResult;
     pipelineEX_MEMIn.ALUOut64 = ALU1.ALUResult64;
-    //printf("data1: 0x%08x, data2: 0x%08x\n", data1, data2);
-
-    printf("EX : instruction: 0x%08x ", inst.completeInst);
-    printf("type: %c , name = %s, rd = %d, rt = %d, rs = %d\n", inst.type, inst.name.c_str(), inst.regRd, inst.regRt, inst.regRs);
 }
 void Simulator::memoryAccess(){
     Instruction inst = pipelineEX_MEMOut.inst;
@@ -347,8 +339,6 @@ void Simulator::memoryAccess(){
         else
             pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.ALUOut;
     }
-    printf("DM : instruction: 0x%08x ", inst.completeInst);
-    printf("type: %c , name = %s, rd = %d, rt = %d, rs = %d\n", inst.type, inst.name.c_str(), inst.regRd, inst.regRt, inst.regRs);
 }
 void Simulator::writeBack(){
     Instruction inst = pipelineMEM_WBOut.inst;
@@ -385,9 +375,6 @@ void Simulator::writeBack(){
             ED.writeToRegister0(inst.regRt);
         }
     }
-
-    printf("WB : instruction: 0x%08x ", inst.completeInst);
-    printf("type: %c , name = %s, rd = %d, rt = %d, ts = %d\n", inst.type, inst.name.c_str(), inst.regRd, inst.regRt, inst.regRs);
 }
 void Simulator::updatePipelineReg(){
     //stall
