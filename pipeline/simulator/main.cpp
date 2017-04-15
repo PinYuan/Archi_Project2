@@ -6,6 +6,7 @@
 #include "simulate.h"
 #include "instruction.h"
 #include "errorDetect.h"
+#include "piperpt.h"
 
 using namespace std;
 unsigned int pc, branchJrpc;
@@ -44,8 +45,11 @@ int main()
         if(pipelineWB.inst.name == "HALT")
             halt = 1;
 
-
-        simulator.hazardReport();
+		hazardReport(simulator.flush, simulator.stall, simulator.forward_EX_MEM_rs_ID,
+                     simulator.forward_MEM_WB_rs_ID, simulator.forward_EX_MEM_rt_ID,
+                     simulator.forward_MEM_WB_rt_ID, simulator.forward_EX_MEM_rs_EX,
+                     simulator.forward_MEM_WB_rs_EX, simulator.forward_EX_MEM_rt_EX,
+                     simulator.forward_MEM_WB_rt_EX);
         simulator.updatePipelineReg();
 
         cycle ++;
