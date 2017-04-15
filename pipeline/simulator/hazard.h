@@ -7,6 +7,8 @@ public:
     bool isEX_MEMForward_rt();
     bool isMEM_WBForward_rs();
     bool isMEM_WBForward_rt();
+	bool isStallForR();
+    bool isStallForI();
 };
 
 #endif // HAZARD_H_INCLUDED
