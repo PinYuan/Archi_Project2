@@ -3,10 +3,10 @@
 
 class Hazard{
 public:
-    bool isEX_MEMForward_rs();
-    bool isEX_MEMForward_rt();
-    bool isMEM_WBForward_rs();
-    bool isMEM_WBForward_rt();
+	bool isEX_MEMForward_rs(unsigned int regRs);
+    bool isEX_MEMForward_rt(unsigned int regRt);
+    bool isMEM_WBForward_rs(unsigned int regRs);
+    bool isMEM_WBForward_rt(unsigned int regRt);
 	bool isStallForR();
     bool isStallForI();
 };
