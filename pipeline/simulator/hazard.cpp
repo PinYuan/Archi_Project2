@@ -65,7 +65,7 @@ bool Hazard::isEX_MEMForward_rs(unsigned int regRs){
             return true;
     }
     else if(inst.type == 'I'){
-        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == ANDI ||
+        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == LUI || inst.opCode == ANDI ||
            inst.opCode == ORI || inst.opCode == NORI || inst.opCode == SLTI){
             regWrite = true;
         }
@@ -94,7 +94,7 @@ bool Hazard::isEX_MEMForward_rt(unsigned int regRt){
             return true;
     }
     else if(inst.type == 'I'){
-        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == ANDI ||
+        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == LUI || inst.opCode == ANDI ||
            inst.opCode == ORI || inst.opCode == NORI || inst.opCode == SLTI){
             regWrite = true;
         }
@@ -131,7 +131,7 @@ bool Hazard::isMEM_WBForward_rs(unsigned int regRs){
             return false;
     }
     else if(inst.type == 'I'){
-        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == ANDI ||
+        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == LUI || inst.opCode == ANDI ||
            inst.opCode == ORI || inst.opCode == NORI || inst.opCode == SLTI ||
            inst.opCode == LW || inst.opCode == LH || inst.opCode == LHU ||
            inst.opCode == LB || inst.opCode == LBU){
@@ -162,7 +162,7 @@ bool Hazard::isMEM_WBForward_rt(unsigned int regRt){
             return true;
     }
     else if(inst.type == 'I'){
-        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == ANDI ||
+        if(inst.opCode == ADDI || inst.opCode == ADDIU || inst.opCode == LUI || inst.opCode == ANDI ||
            inst.opCode == ORI || inst.opCode == NORI || inst.opCode == SLTI||
            inst.opCode == LW || inst.opCode == LH || inst.opCode == LHU ||
            inst.opCode == LB || inst.opCode == LBU){
@@ -187,12 +187,14 @@ bool Hazard::isStallForR(){
                 inst.func != MULT && inst.func != MULTU)){
                 return true;
             }
+			return false;
         }
         else if(inst.type == 'I'){
             if((inst.regRt != 0) && (inst.regRt == pipelineID_EXIn.inst.regRs) && (inst.opCode != SW &&
                 inst.opCode != SH && inst.opCode != SB && inst.opCode != BEQ && inst.opCode != BNE && inst.opCode != BGTZ)){
                 return true;
             }
+			return false;
         }
         return false;
     }
@@ -201,7 +203,7 @@ bool Hazard::isStallForR(){
            (inst.opCode == LW || inst.opCode == LH || inst.opCode == LHU || inst.opCode == LB || inst.opCode == LBU)){
             return true;
         }
-        else return false;
+        return false;
     }
 }
 bool Hazard::isStallForI(){
@@ -215,6 +217,7 @@ bool Hazard::isStallForI(){
                 (instForID_EX.func != JR && instForID_EX.func != MULT && instForID_EX.func != MULTU)){
                 return true;
             }
+			return false;
         }
         else if(instForID_EX.type == 'I'){
             if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs || instForID_EX.regRt == pipelineID_EXIn.inst.regRt) && (instForID_EX.opCode != SW &&
@@ -229,6 +232,7 @@ bool Hazard::isStallForI(){
                  || instForEX_MEM.opCode == LBU)){
                 return true;
             }
+			return false;
         }
         return false;
     }
@@ -241,8 +245,9 @@ bool Hazard::isStallForI(){
                     pipelineID_EXIn.inst.opCode == SB) && (pipelineID_EXIn.inst.regRt == instForID_EX.regRt)){
                 return true;
             }
+			return false;
         }
-        else return false;
+        return false;
     }
 
 }
