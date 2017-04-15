@@ -21,7 +21,6 @@ RegisterFile::RegisterFile(){
     }
     HI = oldHI = 0;
     LO = oldLO = 0;
-    oldPc = pc;
 }
 
 void RegisterFile::readWrite(unsigned int readRegister1, unsigned int readRegister2, unsigned int writeRegister
@@ -76,11 +75,7 @@ void RegisterFile::outputRegister(int cycle){
             oldLO = LO;
         }
         //pc
-        if(oldPc != pc){
-            fprintf(fptr, "PC: 0x%08X\n", pc);
-            oldPc = pc;
-        }
-        fprintf(fptr, "\n\n");
+        fprintf(fptr, "PC: 0x%08X\n", pc);
     }
     fclose(fptr);
 }

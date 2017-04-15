@@ -5,7 +5,7 @@ class RegisterFile{
 private:
     unsigned int registers[32];
     unsigned int oldRegisters[32];
-    unsigned int oldPc, oldHI, oldLO;
+    unsigned int oldHI, oldLO;
 public:
     unsigned int readData1, readData2;
 
