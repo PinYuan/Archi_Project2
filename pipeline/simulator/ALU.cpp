@@ -1,10 +1,8 @@
 #include <bits/stdc++.h>
 #include "ALU.h"
-//#include "errorDetect.h"
 using namespace std;
 extern unsigned int HI;
 extern unsigned int LO;
-//extern ErrorDetect ED;
 
 void ALU::ALUoperater(unsigned int data1, unsigned int data2, unsigned int ALUControl){
     if(ALUControl == 0){//add
