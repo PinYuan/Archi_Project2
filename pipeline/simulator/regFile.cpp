@@ -52,8 +52,6 @@ void RegisterFile::outputRegister(int cycle){
         fprintf(fptr, "$LO: 0x%08X\n", LO);
         //pc
         fprintf(fptr, "PC: 0x%08X\n", pc);
-
-        fprintf(fptr, "\n\n");
     }
     else{//only print change
         fprintf(fptr, "cycle %d\n", cycle);
