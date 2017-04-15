@@ -189,10 +189,10 @@ void Simulator::executeOp(){
         //if forward
         if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
-        else data1 = pipelineEX_MEMIn.rsData;
+        else data1 = pipelineID_EXOut.rsData;
         if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
         else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
-        else data2 = pipelineEX_MEMIn.rtData;
+        else data2 = pipelineID_EXOut.rtData;
 
 		pipelineEX_MEMIn.rsData = data1;
         pipelineEX_MEMIn.rtData = data2;	
@@ -260,7 +260,7 @@ void Simulator::executeOp(){
     else if(inst.type == 'I' && (inst.opCode != BEQ && inst.opCode != BNE && inst.opCode != BGTZ)){
         if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
-        else data1 = pipelineEX_MEMIn.rsData;
+        else data1 = pipelineID_EXOut.rsData;
 		//for store
 		if(inst.opCode == SW || inst.opCode == SH || inst.opCode == SB){
             if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
