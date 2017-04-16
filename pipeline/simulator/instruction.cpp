@@ -48,7 +48,11 @@ Instruction::Instruction(unsigned int instruction){
     }
     else if(opCode == 0){
         type = 'R';
-        if(instFunc.find(func) != instFunc.end())
+		if(func == 0 && regRt == 0 && regRd == 0){
+            type = 'S';
+            name = "NOP";
+        }
+        else if(instFunc.find(func) != instFunc.end())
             name = instFunc[func];
         else{
             printf("illegal instruction found at 0x%X\n", pc);
