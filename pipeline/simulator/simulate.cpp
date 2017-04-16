@@ -186,11 +186,13 @@ void Simulator::executeOp(){
         pipelineEX_MEMIn.rsData = pipelineID_EXOut.rsData;
     }
     else if(inst.type == 'R' && inst.func != JR){
-        //if forward
-        if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
-        else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
-        else data1 = pipelineID_EXOut.rsData;
-        if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
+        //sll need not forward rs
+		if(inst.func != SLL){
+       	 	if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
+        	else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
+        	else data1 = pipelineID_EXOut.rsData;
+        }
+		if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
         else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
         else data2 = pipelineID_EXOut.rtData;
 
@@ -258,9 +260,12 @@ void Simulator::executeOp(){
         }
     }
     else if(inst.type == 'I' && (inst.opCode != BEQ && inst.opCode != BNE && inst.opCode != BGTZ)){
-        if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
-        else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
-        else data1 = pipelineID_EXOut.rsData;
+        //lui need not forward rs
+        if(inst.opCode != LUI){
+			if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
+        	else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
+        	else data1 = pipelineID_EXOut.rsData;
+		}
 		//for store
 		if(inst.opCode == SW || inst.opCode == SH || inst.opCode == SB){
             if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
