@@ -180,31 +180,41 @@ bool Hazard::isMEM_WBForward_rt(unsigned int regRt){
     return false;
 }
 bool Hazard::isStallForR(){
-    Instruction inst = pipelineID_EXOut.inst;
-    if(pipelineID_EXIn.inst.func == JR){
-        if(inst.type == 'R'){
-            if((inst.regRd != 0) && (inst.regRd == pipelineID_EXIn.inst.regRs) && (inst.func != JR &&
-                inst.func != MULT && inst.func != MULTU)){
+    Instruction instForID_EX = pipelineID_EXOut.inst;
+    Instruction instForEX_MEM = pipelineEX_MEMOut.inst;
+
+	if(pipelineID_EXIn.inst.func == JR){
+        if(instForID_EX.type == 'R'){
+            if((instForID_EX.regRd != 0) && (instForID_EX.regRd == pipelineID_EXIn.inst.regRs) && (instForID_EX.func != JR &&
+                instForID_EX.func != MULT && instForID_EX.func != MULTU)){
                 return true;
             }
 			return false;
         }
-        else if(inst.type == 'I'){
-            if((inst.regRt != 0) && (inst.regRt == pipelineID_EXIn.inst.regRs) && (inst.opCode != SW &&
-                inst.opCode != SH && inst.opCode != SB && inst.opCode != BEQ && inst.opCode != BNE && inst.opCode != BGTZ)){
+        else if(instForID_EX.type == 'I'){
+            if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs) && (instForID_EX.opCode != SW &&
+                instForID_EX.opCode != SH && instForID_EX.opCode != SB && instForID_EX.opCode != BEQ && instForID_EX.opCode != BNE && 				 instForID_EX.opCode != BGTZ)){
                 return true;
             }
 			return false;
+        }
+		else if(instForEX_MEM.type == 'I'){
+            if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs || 
+				instForEX_MEM.regRt == pipelineID_EXIn.inst.regRt) && (instForEX_MEM.opCode == LW || instForEX_MEM.opCode == LH || 
+				instForEX_MEM.opCode == LHU || instForEX_MEM.opCode == LB || instForEX_MEM.opCode == LBU)){
+                return true;
+            }
+            return false;
         }
         return false;
     }
     else{
-        if((inst.regRt != 0) && (pipelineID_EXIn.inst.regRs == inst.regRt || pipelineID_EXIn.inst.regRt == inst.regRt) &&
-           (inst.opCode == LW || inst.opCode == LH || inst.opCode == LHU || inst.opCode == LB || inst.opCode == LBU)){
+    	if((instForID_EX.regRt != 0) && (instForID_EX.regRt ==  pipelineID_EXIn.inst.regRs || instForID_EX.regRt == pipelineID_EXIn.inst.regRt) &&
+           (instForID_EX.opCode == LW || instForID_EX.opCode == LH || instForID_EX.opCode == LHU || instForID_EX.opCode == LB || instForID_EX.opCode == LBU)){
             return true;
         }
         return false;
-    }
+	}
 }
 bool Hazard::isStallForI(){
     Instruction instForID_EX = pipelineID_EXOut.inst;
