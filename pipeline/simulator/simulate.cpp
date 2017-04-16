@@ -187,14 +187,16 @@ void Simulator::executeOp(){
     }
     else if(inst.type == 'R' && inst.func != JR){
         //sll need not forward rs
-		if(inst.func != SLL){
+		if(inst.func != SLL && inst.func != SRL && inst.func != SRA && inst.func != MFHI && inst.func != MFLO){
        	 	if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         	else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
         	else data1 = pipelineID_EXOut.rsData;
         }
-		if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
-        else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
-        else data2 = pipelineID_EXOut.rtData;
+		if(inst.func != MFHI && inst.func != MFLO){
+			if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_EX = true;
+        	else if(hazard.isMEM_WBForward_rt(inst.regRt)) data2 =  pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rt_EX = true;
+        	else data2 = pipelineID_EXOut.rtData;
+		}
 
 		pipelineEX_MEMIn.rsData = data1;
         pipelineEX_MEMIn.rtData = data2;	
