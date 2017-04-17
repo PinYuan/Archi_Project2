@@ -134,9 +134,11 @@ void Simulator::instructionDecode(){
 
                 if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_ID = true;
                 else data1 = RF.readData1;
-                if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_ID = true;
-                else data2 = RF.readData2;
-                /*judge*/
+                if(inst.opCode != BGTZ){
+					if(hazard.isEX_MEMForward_rt(inst.regRt)) data2 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rt_ID = true;
+                	else data2 = RF.readData2;
+                }
+				/*judge*/
                 if(inst.opCode == BEQ){
                     if(data1 == data2){
                         branchJrpc = pc + (signExtendOut << 2);
