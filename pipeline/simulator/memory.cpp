@@ -68,36 +68,45 @@ void InstructionMemory::outputInstMemory(){
     }
     fclose(fptr);
 }
+bool isEmpty(FILE *file){
+    long savedOffset = ftell(file);
+    fseek(file, 0, SEEK_END);
+
+    if (ftell(file) == 0){
+        return true;
+    }
+
+    fseek(file, savedOffset, SEEK_SET);
+    return false;
+}
 
 DataMemory::DataMemory(){
     FILE *fptr;
     fptr = fopen("dimage.bin" , "rb");
     if(!fptr){printf("open file error\n");return ;}
 
-    char c;
+    unsigned char c;
+	
+	initialSp = numOfData = 0;
 
-    initialSp = 0;
-    for(int i=0;i<4;i++){
-        c = fgetc(fptr);
-       	if(c != EOF) initialSp += c << (8*(3-i));
-    	else break;
-	}
-
-    numOfData = 0;
-    for(int i=0;i<4;i++){
-        c = fgetc(fptr);
-        if(c != EOF) numOfData += c << (8*(3-i));
-    	else break;
-	}
-
-    for(int i=0;i<numOfData;i++){
-        for(int j=0;j<4;j++){
-            c = fgetc(fptr);
-            if(c != EOF) dataMemory[4*i+j] = c;
-        	else break;
+	if(!isEmpty(fptr)){
+    	for(int i=0;i<4;i++){
+        	c = fgetc(fptr);
+       		initialSp += c << (8*(3-i));
 		}
-    }
 
+    	for(int i=0;i<4;i++){
+       	 	c = fgetc(fptr);
+        	numOfData += c << (8*(3-i));
+		}
+
+    	for(int i=0;i<numOfData;i++){
+        	for(int j=0;j<4;j++){
+           		c = fgetc(fptr);
+            	dataMemory[4*i+j] = c;
+			}	
+    	}
+	}
     fclose(fptr);
 }
 
