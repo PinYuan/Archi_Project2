@@ -189,22 +189,19 @@ bool Hazard::isStallForR(){
                 instForID_EX.func != MULT && instForID_EX.func != MULTU)){
                 return true;
             }
-			return false;
         }
         else if(instForID_EX.type == 'I'){
             if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs) && (instForID_EX.opCode != SW &&
                 instForID_EX.opCode != SH && instForID_EX.opCode != SB && instForID_EX.opCode != BEQ && instForID_EX.opCode != BNE && 				 instForID_EX.opCode != BGTZ)){
                 return true;
             }
-			return false;
         }
-		else if(instForEX_MEM.type == 'I'){
+		if(instForEX_MEM.type == 'I'){
             if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs || 
 				instForEX_MEM.regRt == pipelineID_EXIn.inst.regRt) && (instForEX_MEM.opCode == LW || instForEX_MEM.opCode == LH || 
 				instForEX_MEM.opCode == LHU || instForEX_MEM.opCode == LB || instForEX_MEM.opCode == LBU)){
                 return true;
             }
-            return false;
         }
         return false;
     }
@@ -227,7 +224,6 @@ bool Hazard::isStallForI(){
                 (instForID_EX.func != JR && instForID_EX.func != MULT && instForID_EX.func != MULTU)){
                 return true;
             }
-			return false;
         }
         else if(instForID_EX.type == 'I'){
             if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs || instForID_EX.regRt == pipelineID_EXIn.inst.regRt) && (instForID_EX.opCode != SW &&
@@ -236,13 +232,12 @@ bool Hazard::isStallForI(){
             }
         }
         /*branch right after load need stall two cycle*/
-        else if(instForEX_MEM.type == 'I'){
+        if(instForEX_MEM.type == 'I'){
             if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs || instForEX_MEM.regRt == pipelineID_EXIn.inst.regRt) &&
                 (instForEX_MEM.opCode == LW || instForEX_MEM.opCode == LH || instForEX_MEM.opCode == LHU || instForEX_MEM.opCode == LB
                  || instForEX_MEM.opCode == LBU)){
                 return true;
             }
-			return false;
         }
         return false;
     }
