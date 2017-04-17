@@ -8,7 +8,7 @@ extern unsigned int initialSp;
 
 InstructionMemory::InstructionMemory(){
     FILE *fptr;
-    fptr = fopen("testcase/iimage.bin" , "rb");
+    fptr = fopen("iimage.bin" , "rb");
     if(!fptr){printf("open file error\n");return;}
 
     for(int i=0;i<1024;i++)
@@ -71,28 +71,31 @@ void InstructionMemory::outputInstMemory(){
 
 DataMemory::DataMemory(){
     FILE *fptr;
-    fptr = fopen("testcase/dimage.bin" , "rb");
+    fptr = fopen("dimage.bin" , "rb");
     if(!fptr){printf("open file error\n");return ;}
 
-    unsigned char c;
+    char c;
 
     initialSp = 0;
     for(int i=0;i<4;i++){
         c = fgetc(fptr);
-        initialSp += c << (8*(3-i));
-    }
+       	if(c != EOF) initialSp += c << (8*(3-i));
+    	else break;
+	}
 
     numOfData = 0;
     for(int i=0;i<4;i++){
         c = fgetc(fptr);
-        numOfData += c << (8*(3-i));
-    }
+        if(c != EOF) numOfData += c << (8*(3-i));
+    	else break;
+	}
 
     for(int i=0;i<numOfData;i++){
         for(int j=0;j<4;j++){
             c = fgetc(fptr);
-            dataMemory[4*i+j] = c;
-        }
+            if(c != EOF) dataMemory[4*i+j] = c;
+        	else break;
+		}
     }
 
     fclose(fptr);
