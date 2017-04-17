@@ -48,7 +48,7 @@ Instruction::Instruction(unsigned int instruction){
     }
     else if(opCode == 0){
         type = 'R';
-		if(func == 0 && regRt == 0 && regRd == 0){
+		if(func == 0 && regRt == 0 && regRd == 0 && shamt == 0){
             type = 'S';
             name = "NOP";
         }
