@@ -79,15 +79,17 @@ void ErrorDetect::memoryAddressOverflow(unsigned int opCode, unsigned int addres
     }
 }
 void ErrorDetect::dataMisaligned(unsigned int opCode, unsigned int address){
-    if(opCode == LW || opCode == SW){//word lw sw
+    bool error = false;
+	if(opCode == LW || opCode == SW){//word lw sw
         if(address%4 != 0)
-            halt = 1;
+           	error = true;
     }
     else if(opCode == LH || opCode == LHU || opCode == SH){//half lh lhu sh
         if(address%2 != 0)
-            halt = 1;
+            error = true;
     }
-    if(halt){
+    if(error){
+		halt = 1;
         FILE* fptr;
         fptr = fopen("error_dump.rpt", "a");
         fprintf(fptr , "In cycle %d: Misalignment Error\n", cycle+1);
