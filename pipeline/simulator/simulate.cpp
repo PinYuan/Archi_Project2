@@ -152,7 +152,7 @@ void Simulator::instructionDecode(){
                     }
                 }
                 else if(inst.opCode == BGTZ){
-                    if(data1>>31 == 0){
+                    if(data1>>31 == 0 && data1 != 0){
                         branchJrpc = pc + (signExtendOut << 2);
                         branchJr = true;
                         flush = true;
@@ -182,11 +182,9 @@ void Simulator::executeOp(){
     forward_MEM_WB_rs_EX = false;
     forward_MEM_WB_rt_EX = false;
     unsigned int data1, data2;
-	if(inst.type == 'J' && inst.opCode == JAL){
-        pipelineEX_MEMIn.rsData = pipelineID_EXOut.rsData;
-    }
-    else if(inst.type == 'R' && inst.func != JR){
-        //sll need not forward rs
+    
+	if(inst.type == 'R' && inst.func != JR){
+        //sll srl sra mfhi mflo  need not forward rs
 		if(inst.func != SLL && inst.func != SRL && inst.func != SRA && inst.func != MFHI && inst.func != MFLO){
        	 	if(hazard.isEX_MEMForward_rs(inst.regRs)) data1 = pipelineEX_MEMOut.ALUOut, forward_EX_MEM_rs_EX = true;
         	else if(hazard.isMEM_WBForward_rs(inst.regRs)) data1 = pipelineMEM_WBOut.writeBackData, forward_MEM_WB_rs_EX = true;
@@ -304,7 +302,11 @@ void Simulator::executeOp(){
             ALU1.ALUoperater(data1, pipelineEX_MEMIn.signExtendImme, 7);
         }
     }
-    pipelineEX_MEMIn.ALUOut = ALU1.ALUResult;
+	if(inst.type == 'J' && inst.opCode == JAL)
+        pipelineEX_MEMIn.ALUOut = pipelineID_EXOut.rsData;
+    else
+        pipelineEX_MEMIn.ALUOut = ALU1.ALUResult;
+	
     pipelineEX_MEMIn.ALUOut64 = ALU1.ALUResult64;
 }
 void Simulator::memoryAccess(){
@@ -316,7 +318,7 @@ void Simulator::memoryAccess(){
     pipelineMEM_WBIn.LO = pipelineEX_MEMOut.LO;
 
 	if(inst.type == 'J' && inst.opCode == JAL){
-        pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.rsData;
+        pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.ALUOut;
     }
     else if(inst.type == 'R'){
         pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.ALUOut;
