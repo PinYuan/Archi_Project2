@@ -21,5 +21,5 @@ piperpt.o:piperpt.cpp
 hazard.o:hazard.cpp
 	g++ -std=c++11 -g -c hazard.cpp
 clean:
-	rm -f pipeline main.o simulate.o ALU.o errorDetect.o instruction.o memory.o regFile.o pipelineReg.o piperpt.o hazard.o 
+	rm -f  main.o simulate.o ALU.o errorDetect.o instruction.o memory.o regFile.o pipelineReg.o piperpt.o hazard.o 
 

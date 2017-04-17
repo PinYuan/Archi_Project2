@@ -236,8 +236,8 @@ bool Hazard::isStallForI(){
 			}
 			else if(pipelineID_EXIn.inst.opCode == BGTZ){
                 if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs) &&
-                    (instForID_EX.opCode != SW && instForID_EX.opCode != SH && instForID_EX.opCode != SB && instForID_EX.opCode != BEQ &&
-                     instForID_EX.opCode != BNE && instForID_EX.opCode != BGTZ)){
+                    (instForID_EX.opCode != SW && instForID_EX.opCode != SH && instForID_EX.opCode != SB && 
+					 instForID_EX.opCode != BEQ && instForID_EX.opCode != BNE && instForID_EX.opCode != BGTZ)){
                     return true;
                 }
             }

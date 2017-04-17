@@ -1,4 +1,4 @@
-fndef ERRORDETECT_H_INCLUDED
+#ifndef ERRORDETECT_H_INCLUDED
 #define ERRORDETECT_H_INCLUDED
 using namespace std;
 

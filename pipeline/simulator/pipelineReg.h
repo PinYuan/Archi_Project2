@@ -1,4 +1,4 @@
-fndef PIPELINEREG_H_INCLUDED
+#ifndef PIPELINEREG_H_INCLUDED
 #define PIPELINEREG_H_INCLUDED
 #include "instruction.h"
 class PipelineIF_ID{
