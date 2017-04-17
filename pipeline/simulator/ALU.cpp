@@ -46,14 +46,15 @@ void ALU::ALUoperater(unsigned int data1, unsigned int data2, unsigned int ALUCo
         ALUResult = data1 >> data2;
     }
     else if(ALUControl == 10){//sra
-        unsigned int signBit = data1 >> 31;
-        unsigned int mask = 0xFFFFFFFF;
-        data1 >>= data2;
-        if(signBit){
-            data1 |= ((mask >> (32-data2)) << (32-data2));
+    	bitset<32> data1Bit(data1);
+        bool neg = data1Bit[31]?1:0;
+        data1Bit >>= data2;
+        if(neg){
+            for(int i=0;i<data2;i++)
+                data1Bit.set(31-i,1);
         }
-        ALUResult = data1;
-    }
+        ALUResult = data1Bit.to_ulong();
+	}
     else if(ALUControl == 11 || ALUControl == 12){//mult multu
         bitset<32> rs(data1), rt(data2);
         bitset<64> ALUResultBit64(0);
