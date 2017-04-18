@@ -29,6 +29,9 @@ PipelineWB pipelineWB;
 
 int main()
 {
+	ios::sync_with_stdio(false);
+    cin.tie(0);
+
     Simulator simulator;
     int cycle = 0;
     halt = 0;
