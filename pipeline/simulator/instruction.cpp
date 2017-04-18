@@ -56,7 +56,7 @@ Instruction::Instruction(unsigned int instruction){
             name = instFunc[func];
         else{
             printf("illegal instruction found at 0x%X\n", pc);
-            halt = 0;
+            halt = 1;
         }
 	}
     else{
@@ -65,7 +65,7 @@ Instruction::Instruction(unsigned int instruction){
             name = instOpcode[opCode];
         else{
             printf("illegal instruction found at 0x%X\n", pc);
-            halt = 0;
+            halt = 1;
         }
     }
 }
