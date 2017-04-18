@@ -3,7 +3,7 @@
 using namespace std;
 
 extern unsigned int pc;
-extern unsigned int halt;
+extern unsigned int illegal;
 
 map<int, string> instFunc{
     {0x20, "ADD"}, {0x21, "ADDU"}, {0x22 ,"SUB"}, {0x24, "AND"}, {0x25, "OR"}, {0x26, "XOR"},
@@ -56,7 +56,7 @@ Instruction::Instruction(unsigned int instruction){
             name = instFunc[func];
         else{
             printf("illegal instruction found at 0x%X\n", pc);
-            halt = 1;
+            illegal = 1;
         }
 	}
     else{
@@ -65,7 +65,7 @@ Instruction::Instruction(unsigned int instruction){
             name = instOpcode[opCode];
         else{
             printf("illegal instruction found at 0x%X\n", pc);
-            halt = 1;
+            illegal = 1;
         }
     }
 }

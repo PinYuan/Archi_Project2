@@ -14,6 +14,7 @@ unsigned int initialSp;
 unsigned int HI;
 unsigned int LO;
 unsigned int halt;
+unsigned int illegal;
 
 InstructionMemory IM;
 DataMemory DM;
@@ -35,6 +36,7 @@ int main()
     Simulator simulator;
     int cycle = 0;
     halt = 0;
+	illegal = 0;
     while(1){
         RF.outputRegister(cycle);
 		ED.setCycle(cycle);
@@ -47,6 +49,8 @@ int main()
 
         if(pipelineWB.inst.name == "HALT")
             halt = 1;
+		if(illegal)
+			break;
 
 		hazardReport(simulator.flush, simulator.stall, simulator.forward_EX_MEM_rs_ID,
                      simulator.forward_MEM_WB_rs_ID, simulator.forward_EX_MEM_rt_ID,
