@@ -307,6 +307,10 @@ void Simulator::executeOp(){
     }
 	if(inst.type == 'J' && inst.opCode == JAL)
         pipelineEX_MEMIn.ALUOut = pipelineID_EXOut.rsData;
+	else if(inst.type == 'R' && inst.func == MFHI)
+        pipelineEX_MEMIn.ALUOut = pipelineEX_MEMIn.HI;
+    else if(inst.type == 'R' && inst.func == MFLO)
+        pipelineEX_MEMIn.ALUOut = pipelineEX_MEMIn.LO;
     else
         pipelineEX_MEMIn.ALUOut = ALU1.ALUResult;
 	
@@ -317,8 +321,6 @@ void Simulator::memoryAccess(){
     pipelineMEM_WBIn.inst = pipelineEX_MEMOut.inst;
     pipelineMEM_WBIn.rtData = pipelineEX_MEMOut.rtData;
     pipelineMEM_WBIn.ALUOut = pipelineEX_MEMOut.ALUOut;
-    pipelineMEM_WBIn.HI = pipelineEX_MEMOut.HI;
-    pipelineMEM_WBIn.LO = pipelineEX_MEMOut.LO;
 
 	if(inst.type == 'J' && inst.opCode == JAL){
         pipelineMEM_WBIn.writeBackData = pipelineEX_MEMOut.ALUOut;
@@ -377,8 +379,6 @@ void Simulator::memoryAccess(){
 void Simulator::writeBack(){
     Instruction inst = pipelineMEM_WBOut.inst;
     pipelineWB.inst = pipelineMEM_WBOut.inst;
-    pipelineWB.HI = pipelineMEM_WBOut.HI;
-    pipelineWB.LO = pipelineMEM_WBOut.LO;
     pipelineWB.writeBackData = pipelineMEM_WBOut.writeBackData;
 
 	if(inst.type == 'J'){
@@ -389,16 +389,9 @@ void Simulator::writeBack(){
     else if(inst.type == 'R'){
         if(inst.func == ADD || inst.func == ADDU || inst.func == SUB || inst.func == AND ||
            inst.func == OR || inst.func == XOR || inst.func == NOR || inst.func == NAND ||
-           inst.func == SLT || inst.func == SLL || inst.func == SRL || inst.func == SRA){
+           inst.func == SLT || inst.func == SLL || inst.func == SRL || inst.func == SRA ||
+			inst.func == MFHI || inst.func == MFLO){
             RF.readWrite(0, 0, inst.regRd, pipelineWB.writeBackData, true);
-            ED.writeToRegister0(inst.regRd);
-        }
-        else if(inst.func == MFHI){
-            RF.readWrite(0, 0, inst.regRd, pipelineWB.HI, true);
-            ED.writeToRegister0(inst.regRd);
-        }
-        else if(inst.func == MFLO){
-            RF.readWrite(0, 0, inst.regRd, pipelineWB.LO, true);
             ED.writeToRegister0(inst.regRd);
         }
     }

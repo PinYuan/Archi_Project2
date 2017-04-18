@@ -35,8 +35,6 @@ public:
     Instruction inst;
     unsigned int rtData;
     unsigned int ALUOut;
-    unsigned int HI;
-    unsigned int LO;
     unsigned int writeBackData;
     PipelineMEM_WB();
 };
@@ -44,8 +42,6 @@ public:
 class PipelineWB{
 public:
     Instruction inst;
-    unsigned int HI;
-    unsigned int LO;
     unsigned int writeBackData;
     PipelineWB();
 };

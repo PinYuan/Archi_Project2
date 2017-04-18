@@ -22,12 +22,10 @@ PipelineEX_MEM::PipelineEX_MEM(){
 PipelineMEM_WB::PipelineMEM_WB(){
     rtData = 0;
     ALUOut = 0;
-    HI = LO = 0;
     writeBackData = 0;
 }
 ///PipelineWB///
 PipelineWB::PipelineWB(){
-    HI = LO = 0;
     writeBackData = 0;
 }
 
