@@ -205,6 +205,9 @@ bool Hazard::isStallForR(){
         }
         return false;
     }
+	else if(pipelineID_EXIn.inst.func == MFLO || pipelineID_EXIn.inst.func == MFHI){
+        return false;
+    }
     else{
     	if((instForID_EX.regRt != 0) && (instForID_EX.regRt ==  pipelineID_EXIn.inst.regRs || instForID_EX.regRt == pipelineID_EXIn.inst.regRt) &&
            (instForID_EX.opCode == LW || instForID_EX.opCode == LH || instForID_EX.opCode == LHU || instForID_EX.opCode == LB || instForID_EX.opCode == LBU)){
