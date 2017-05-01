@@ -230,11 +230,19 @@ bool Hazard::isStallForI(){
     if(pipelineID_EXIn.inst.opCode == BEQ || pipelineID_EXIn.inst.opCode == BNE || pipelineID_EXIn.inst.opCode == BGTZ){
         /*load use need stall one cycle*/
         if(instForID_EX.type == 'R'){
-            if((instForID_EX.regRd != 0) && (instForID_EX.regRd == pipelineID_EXIn.inst.regRs || instForID_EX.regRd == pipelineID_EXIn.inst.regRt) &&
+        	if(pipelineID_EXIn.inst.opCode == BEQ || pipelineID_EXIn.inst.opCode == BNE){
+                if((instForID_EX.regRd != 0) && (instForID_EX.regRd == pipelineID_EXIn.inst.regRs || instForID_EX.regRd == pipelineID_EXIn.inst.regRt) &&
                 (instForID_EX.func != JR && instForID_EX.func != MULT && instForID_EX.func != MULTU)){
-                return true;
+                    return true;
+                }
             }
-        }
+            else if(pipelineID_EXIn.inst.opCode == BGTZ){
+                if((instForID_EX.regRd != 0) && (instForID_EX.regRd == pipelineID_EXIn.inst.regRs) &&
+                (instForID_EX.func != JR && instForID_EX.func != MULT && instForID_EX.func != MULTU)){
+                    return true;
+                }
+            }
+		}
         else if(instForID_EX.type == 'I'){
             if(pipelineID_EXIn.inst.opCode == BEQ || pipelineID_EXIn.inst.opCode == BNE){
 				if((instForID_EX.regRt != 0) && (instForID_EX.regRt == pipelineID_EXIn.inst.regRs || 
@@ -254,12 +262,21 @@ bool Hazard::isStallForI(){
         }
         /*branch right after load need stall two cycle*/
         if(instForEX_MEM.type == 'I'){
-            if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs || instForEX_MEM.regRt == pipelineID_EXIn.inst.regRt) &&
+        	if(pipelineID_EXIn.inst.opCode == BEQ || pipelineID_EXIn.inst.opCode == BNE){
+                if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs || instForEX_MEM.regRt == pipelineID_EXIn.inst.regRt) &&
                 (instForEX_MEM.opCode == LW || instForEX_MEM.opCode == LH || instForEX_MEM.opCode == LHU || instForEX_MEM.opCode == LB
                  || instForEX_MEM.opCode == LBU)){
-                return true;
+                    return true;
+                }
             }
-        }
+            else if(pipelineID_EXIn.inst.opCode == BGTZ){
+                if((instForEX_MEM.regRt != 0) && (instForEX_MEM.regRt == pipelineID_EXIn.inst.regRs) &&
+                (instForEX_MEM.opCode == LW || instForEX_MEM.opCode == LH || instForEX_MEM.opCode == LHU || instForEX_MEM.opCode == LB
+                 || instForEX_MEM.opCode == LBU)){
+                    return true;
+                }
+            }
+		}
         return false;
     }
 	else if(pipelineID_EXIn.inst.opCode == LUI){
